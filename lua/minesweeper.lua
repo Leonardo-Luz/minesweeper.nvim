@@ -40,6 +40,22 @@ local window_config = function()
   }
 end
 
+local get_current_pos = function()
+  local pos = vim.api.nvim_win_get_cursor(0)
+
+  for _, flag in pairs(state.map.flags) do
+    if flag.x == pos[1] and flag.y == pos[2] then
+      return nil
+    end
+  end
+
+  return { x = pos[1], y = pos[2] }
+end
+
+local get_random_pos = function()
+  return { x = math.random(state.map.size.x), y = math.random(state.map.size.y) }
+end
+
 local clear_map = function() end
 
 local set_map = function() end
@@ -47,7 +63,15 @@ local set_map = function() end
 local set_content = function() end
 
 local remaps = function()
-  vim.keymap.set("n", "f", function() end, {
+  vim.keymap.set("n", "f", function()
+    local pos = get_current_pos()
+
+    if pos == nil then
+      return
+    end
+
+    table.insert(state.map.flags, get_current_pos())
+  end, {
     buffer = state.window_config.floating.buf,
   })
 
