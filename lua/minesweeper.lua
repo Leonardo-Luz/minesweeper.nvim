@@ -56,6 +56,27 @@ local get_random_pos = function()
   return { x = math.random(state.map.size.x), y = math.random(state.map.size.y) }
 end
 
+local spawn_bombs = function()
+  state.map.bombs = {}
+
+  for _ = 1, state.map.max_bombs do
+    local pos = nil
+
+    while pos == nil do
+      pos = get_random_pos()
+
+      for _, bomb in pairs(state.map.bombs) do
+        if pos.x == bomb.x and pos.y == bomb.y then
+          pos = nil
+          break
+        end
+      end
+    end
+
+    table.insert(state.map.bombs, pos)
+  end
+end
+
 local clear_map = function() end
 
 local set_map = function() end
@@ -81,6 +102,8 @@ local remaps = function()
 end
 
 M.start = function()
+  spawn_bombs()
+
   state.window_config = window_config()
 
   state.window_config.floating = floatwindow.create_floating_window(state.window_config)
