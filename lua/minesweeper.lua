@@ -331,6 +331,7 @@ local config = function()
       -- Game win
       set_map()
       state.map.flags = {}
+      state.wins = state.wins + 1
 
       ::skip::
     end
