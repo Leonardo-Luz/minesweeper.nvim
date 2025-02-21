@@ -223,42 +223,41 @@ local batch_uncover = function (pos) end
 
 batch_uncover = function (pos)
   for _, tile in pairs(state.map.num_tiles) do
+
+    local uncover_tile = function ()
+        tile.covered = false
+        if tile.count == 0 then
+          batch_uncover({
+            x = tile.x,
+            y = tile.y
+          })
+        end
+    end
+
     if tile.covered == true then
       if pos.x == tile.x and pos.y + 1 == tile.y then
-        tile.covered = false
-        if tile.count == 0 then
-          batch_uncover({
-            x = tile.x,
-            y = tile.y
-          })
-        end
+        uncover_tile()
       end
       if pos.x == tile.x and pos.y - 1 == tile.y then
-        tile.covered = false
-        if tile.count == 0 then
-          batch_uncover({
-            x = tile.x,
-            y = tile.y
-          })
-        end
+        uncover_tile()
       end
       if pos.x + 1 == tile.x and pos.y == tile.y then
-        tile.covered = false
-        if tile.count == 0 then
-          batch_uncover({
-            x = tile.x,
-            y = tile.y
-          })
-        end
+        uncover_tile()
       end
       if pos.x - 1 == tile.x and pos.y == tile.y then
-        tile.covered = false
-        if tile.count == 0 then
-          batch_uncover({
-            x = tile.x,
-            y = tile.y
-          })
-        end
+        uncover_tile()
+      end
+      if pos.x + 1 == tile.x and pos.y + 1 == tile.y then
+        uncover_tile()
+      end
+      if pos.x + 1 == tile.x and pos.y - 1 == tile.y then
+        uncover_tile()
+      end
+      if pos.x - 1 == tile.x and pos.y + 1 == tile.y then
+        uncover_tile()
+      end
+      if pos.x - 1 == tile.x and pos.y - 1 == tile.y then
+        uncover_tile()
       end
     end
   end
