@@ -414,6 +414,12 @@ M.setup = function(opts)
   state.map.max_bombs = opts.max_bombs or 50
 end
 
-vim.api.nvim_create_user_command("Minesweeper", M.start, {})
+vim.api.nvim_create_user_command("Minesweeper", function ()
+  if not vim.api.nvim_win_is_valid(state.window_config.main.floating.win) then
+    M.start()
+  else
+    vim.api.nvim_win_close(state.window_config.main.floating.win, true)
+  end
+end, {})
 
 return M
