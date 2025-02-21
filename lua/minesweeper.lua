@@ -182,12 +182,12 @@ local set_content = function()
 
       -- show bombs, debug
 
-      -- for _, flag in pairs(state.map.bombs) do
-      --   if flag.x == x and flag.y == y then
-      --     line = line .. 'x'
-      --     goto continue
-      --   end
-      -- end
+      for _, flag in pairs(state.map.bombs) do
+        if flag.x == x and flag.y == y then
+          line = line .. 'B'
+          goto continue
+        end
+      end
 
       for _, tile in pairs(state.map.num_tiles) do
         if tile.covered == false and tile.y == y and tile.x == x then
@@ -282,19 +282,14 @@ local uncover = function ()
 
   for _, tile in pairs(state.map.num_tiles) do
     if tile.covered == true and pos.x == tile.x and pos.y == tile.y and tile.count == 0 then
-      tile.covered = false
       batch_uncover(pos)
-      set_content()
-      return
     end
 
     if tile.covered == true and pos.x == tile.x and pos.y == tile.y then
       tile.covered = false
       set_content()
-      return
     end
   end
-
 end
 
 local config = function()
@@ -302,8 +297,7 @@ local config = function()
     local pos = get_current_pos()
 
     if pos == nil then
-      set_content()
-      return
+      goto check_win
     end
 
     for _, tile in pairs(state.map.num_tiles) do
@@ -314,6 +308,7 @@ local config = function()
 
     table.insert(state.map.flags, pos)
 
+    ::check_win::
     if #state.map.flags == #state.map.bombs then
       for _, flag in pairs(state.map.flags) do
         for _, bomb in pairs(state.map.bombs) do
