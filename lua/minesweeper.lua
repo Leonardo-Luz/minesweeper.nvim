@@ -182,12 +182,12 @@ local set_content = function()
 
       -- show bombs, debug
 
-      for _, flag in pairs(state.map.bombs) do
-        if flag.x == x and flag.y == y then
-          line = line .. 'B'
-          goto continue
-        end
-      end
+      -- for _, flag in pairs(state.map.bombs) do
+      --   if flag.x == x and flag.y == y then
+      --     line = line .. 'B'
+      --     goto continue
+      --   end
+      -- end
 
       for _, tile in pairs(state.map.num_tiles) do
         if tile.covered == false and tile.y == y and tile.x == x then
