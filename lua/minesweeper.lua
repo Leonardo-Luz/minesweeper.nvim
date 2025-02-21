@@ -397,8 +397,9 @@ M.start = function()
 
   config()
 
-  set_map()
-  state.map.flags = {}
+  if #state.map.bombs == 0 then
+    set_map()
+  end
 
   set_content()
 end
