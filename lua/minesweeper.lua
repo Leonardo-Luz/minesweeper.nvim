@@ -203,9 +203,7 @@ local set_content = function()
       line = line .. ' '
 
       ::continue::
-
     end
-
     table.insert(lines, line)
   end
 
@@ -217,6 +215,50 @@ local set_content = function()
 
   vim.api.nvim_buf_set_lines(state.window_config.footer.floating.buf, 0, -1, false, footer)
   vim.api.nvim_buf_set_lines(state.window_config.main.floating.buf, 0, -1, true, lines)
+
+  vim.cmd("highlight Green guibg=green guifg=black")
+  vim.cmd("highlight Yellow guibg=yellow guifg=black")
+  vim.cmd("highlight Red guibg=red guifg=black")
+  vim.cmd("highlight DarkRed guibg=darkred guifg=black")
+  vim.cmd("highlight White guibg=white guifg=gray")
+  vim.cmd("highlight Black guibg=black guifg=white")
+
+  local id = vim.api.nvim_create_namespace('minesweeper')
+
+  local start_line = 0
+  local end_line = vim.api.nvim_buf_line_count(state.window_config.main.floating.buf)
+
+  for line_num = start_line, end_line - 1 do
+    local map_line = vim.api.nvim_buf_get_lines(state.window_config.main.floating.buf, line_num, line_num + 1, false)[1]
+
+    local start_pos = 1
+    for match in string.gmatch(map_line, "[12345678x ]") do
+      local start_col = string.find(map_line, match, start_pos) - 1
+      local end_col = start_col + 1
+
+      local hl_group
+      if match == "1" then
+        hl_group = "Green"
+      elseif match == "2" then
+        hl_group = "Yellow"
+      elseif match == "3" then
+        hl_group = "Red"
+      elseif match == " " then
+        hl_group = "White"
+      elseif match == "x" then
+        hl_group = "Black"
+      else
+        hl_group = "DarkRed"
+      end
+
+      vim.api.nvim_buf_set_extmark(state.window_config.main.floating.buf, id, line_num, start_col, {
+        hl_group = hl_group,
+        end_col = end_col,
+      })
+
+      start_pos = start_col + 2
+    end
+  end
 end
 
 local batch_uncover = function (pos) end
@@ -282,12 +324,16 @@ local uncover = function ()
 
   for _, tile in pairs(state.map.num_tiles) do
     if tile.covered == true and pos.x == tile.x and pos.y == tile.y and tile.count == 0 then
+      tile.covered = false
       batch_uncover(pos)
+      set_content()
+      return
     end
 
     if tile.covered == true and pos.x == tile.x and pos.y == tile.y then
       tile.covered = false
       set_content()
+      return
     end
   end
 end
