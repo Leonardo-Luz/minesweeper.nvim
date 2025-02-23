@@ -213,8 +213,16 @@ local set_content = function()
   local line = string.format('%s%s%s', bomb_remaining, ('.'):rep(state.map.size.x - bomb_remaining:len() - wins:len() + 2), wins)
   table.insert(footer, line)
 
+  vim.api.nvim_set_option_value("modifiable", true, {
+    buf = state.window_config.main.floating.buf,
+  })
+
   vim.api.nvim_buf_set_lines(state.window_config.footer.floating.buf, 0, -1, false, footer)
   vim.api.nvim_buf_set_lines(state.window_config.main.floating.buf, 0, -1, true, lines)
+
+  vim.api.nvim_set_option_value("modifiable", false, {
+    buf = state.window_config.main.floating.buf,
+  })
 
   vim.cmd("highlight Green guibg=green guifg=black")
   vim.cmd("highlight Yellow guibg=yellow guifg=black")
