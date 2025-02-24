@@ -224,12 +224,12 @@ local set_content = function()
     buf = state.window_config.main.floating.buf,
   })
 
-  vim.cmd("highlight Green guibg=green guifg=black")
-  vim.cmd("highlight Yellow guibg=yellow guifg=black")
-  vim.cmd("highlight Red guibg=red guifg=black")
-  vim.cmd("highlight DarkRed guibg=darkred guifg=black")
-  vim.cmd("highlight White guibg=white guifg=gray")
-  vim.cmd("highlight Black guibg=black guifg=white")
+  vim.cmd("highlight MinesweeperGreen guibg=green guifg=black")
+  vim.cmd("highlight MinesweeperYellow guibg=yellow guifg=black")
+  vim.cmd("highlight MinesweeperRed guibg=red guifg=black")
+  vim.cmd("highlight DarkMinesweeperRed guibg=darkred guifg=black")
+  vim.cmd("highlight MinesweeperWhite guibg=white guifg=gray")
+  vim.cmd("highlight MinesweeperBlack guibg=black guifg=white")
 
   local id = vim.api.nvim_create_namespace('minesweeper')
 
@@ -246,17 +246,17 @@ local set_content = function()
 
       local hl_group
       if match == "1" then
-        hl_group = "Green"
+        hl_group = "MinesweeperGreen"
       elseif match == "2" then
-        hl_group = "Yellow"
+        hl_group = "MinesweeperYellow"
       elseif match == "3" then
-        hl_group = "Red"
+        hl_group = "MinesweeperRed"
       elseif match == " " then
-        hl_group = "White"
+        hl_group = "MinesweeperWhite"
       elseif match == "x" then
-        hl_group = "Black"
+        hl_group = "MinesweeperBlack"
       else
-        hl_group = "DarkRed"
+        hl_group = "DarkMinesweeperRed"
       end
 
       vim.api.nvim_buf_set_extmark(state.window_config.main.floating.buf, id, line_num, start_col, {
