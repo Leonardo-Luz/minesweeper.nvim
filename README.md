@@ -19,7 +19,8 @@
     'leonardo-luz/minesweeper.nvim',
     opts = {
       map_size = { x = 30, y = 16 }, -- Board dimensions (x, y). default: { x = 30, y = 16 }
-      max_bombs = 50 -- Maximum number of mines. default: 50
+      max_bombs = 50, -- Maximum number of mines. default: 50
+      highlight_flags_around = false, -- Highlights flags around cursor when enabled. default: false
     },
 }
 ```

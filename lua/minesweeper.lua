@@ -28,6 +28,7 @@ local state = {
     num_tiles = {},
   },
   wins = 0,
+  highlight_flags_around = true,
 }
 
 local foreach_float = function(callback)
@@ -169,13 +170,29 @@ end
 
 local set_content = function()
   local lines = {}
+
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local pos = { y = cursor[1], x = cursor[2]+1 }
+
   for y = 1, state.map.size.y, 1 do
     local line = ''
     for x = 1, state.map.size.x, 1 do
 
       for _, flag in pairs(state.map.flags) do
         if flag.x == x and flag.y == y then
-          line = line .. 'x'
+          if state.highlight_flags_around and
+          ( pos.x == flag.x and pos.y + 1 == flag.y
+          or pos.x == flag.x and pos.y - 1 == flag.y
+          or pos.x + 1 == flag.x and pos.y == flag.y
+          or pos.x - 1 == flag.x and pos.y == flag.y
+          or pos.x + 1 == flag.x and pos.y + 1 == flag.y
+          or pos.x + 1 == flag.x and pos.y - 1 == flag.y
+          or pos.x - 1 == flag.x and pos.y + 1 == flag.y
+          or pos.x - 1 == flag.x and pos.y - 1 == flag.y ) then
+            line = line .. '+'
+          else
+            line = line .. 'x'
+          end
           goto continue
         end
       end
@@ -207,6 +224,7 @@ local set_content = function()
     table.insert(lines, line)
   end
 
+
   local footer = {}
   local bomb_remaining = string.format('Bombs Remaining:%d', state.map.max_bombs - #state.map.flags )
   local wins = string.format('Wins:%d', state.wins)
@@ -230,6 +248,7 @@ local set_content = function()
   vim.cmd("highlight DarkMinesweeperRed guibg=darkred guifg=black")
   vim.cmd("highlight MinesweeperWhite guibg=white guifg=gray")
   vim.cmd("highlight MinesweeperBlack guibg=black guifg=white")
+  vim.cmd("highlight MinesweeperEm guibg=white guifg=darkred cterm=bold gui=bold")
 
   local id = vim.api.nvim_create_namespace('minesweeper')
 
@@ -240,7 +259,7 @@ local set_content = function()
     local map_line = vim.api.nvim_buf_get_lines(state.window_config.main.floating.buf, line_num, line_num + 1, false)[1]
 
     local start_pos = 1
-    for match in string.gmatch(map_line, "[12345678x ]") do
+    for match in string.gmatch(map_line, "[12345678x +]") do
       local start_col = string.find(map_line, match, start_pos) - 1
       local end_col = start_col + 1
 
@@ -255,6 +274,8 @@ local set_content = function()
         hl_group = "MinesweeperWhite"
       elseif match == "x" then
         hl_group = "MinesweeperBlack"
+      elseif match == "+" then
+        hl_group = "MinesweeperEm"
       else
         hl_group = "DarkMinesweeperRed"
       end
@@ -414,8 +435,19 @@ local config = function()
     end,
   })
 
+  vim.api.nvim_create_autocmd("CursorMoved", {
+    group = vim.api.nvim_create_augroup("minesweeper-move", {}),
+    buffer = state.window_config.main.floating.buf,
+    callback = function()
+      if state.highlight_flags_around then
+        set_content()
+      end
+    end,
+  })
+
   vim.api.nvim_create_autocmd("VimResized", {
-    group = vim.api.nvim_create_augroup("present-resized", {}),
+    group = vim.api.nvim_create_augroup("minesweeper-resized", {}),
+    buffer = state.window_config.main.floating.buf,
     callback = function()
       if
         not vim.api.nvim_win_is_valid(state.window_config.main.floating.win)
@@ -455,12 +487,14 @@ end
 ---@class snake.Opts
 ---@field map_size { x: integer, y:integer }: Map size x by x. Default: 30x16
 ---@field max_bombs integer: Max spawned bombs on map. Default: 50
+---@field highlight_flags_around boolean: If active, will highlight the flags around the cursor. Default: false
 
 ---Setup plugin
 ---@param opts snake.Opts
 M.setup = function(opts)
   state.map.map_size = opts.map_size or { x = 30, y = 16 }
   state.map.max_bombs = opts.max_bombs or 50
+  state.map.highlight_flags_around = opts.highlight_flags_around
 end
 
 vim.api.nvim_create_user_command("Minesweeper", function ()
