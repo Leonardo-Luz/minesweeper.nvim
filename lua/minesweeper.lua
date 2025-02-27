@@ -492,8 +492,8 @@ end
 ---Setup plugin
 ---@param opts snake.Opts
 M.setup = function(opts)
-  state.map.map_size = opts.map_size or { x = 30, y = 16 }
-  state.map.max_bombs = opts.max_bombs or 50
+  state.map.map_size = opts.map_size and opts.map_size or { x = 30, y = 16 }
+  state.map.max_bombs = opts.max_bombs and opts.max_bombs or 50
   state.map.highlight_flags_around = opts.highlight_flags_around
 end
 
