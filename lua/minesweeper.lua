@@ -485,14 +485,14 @@ M.start = function()
 end
 
 ---@class snake.Opts
----@field map_size { x: integer, y:integer }: Map size x by x. Default: 30x16
----@field max_bombs integer: Max spawned bombs on map. Default: 50
+---@field map_size { x: integer, y:integer }|nil: Map size x by x. Default: 30x16
+---@field max_bombs integer|nil: Max spawned bombs on map. Default: 50
 ---@field highlight_flags_around boolean: If active, will highlight the flags around the cursor. Default: false
 
 ---Setup plugin
 ---@param opts snake.Opts
 M.setup = function(opts)
-  state.map.map_size = opts.map_size and opts.map_size or { x = 30, y = 16 }
+  state.map.size = opts.map_size and opts.map_size or { x = 30, y = 16 }
   state.map.max_bombs = opts.max_bombs and opts.max_bombs or 50
   state.map.highlight_flags_around = opts.highlight_flags_around
 end
